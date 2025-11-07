@@ -1,6 +1,7 @@
 import Weather from "../pages/Weather";
 import Counter from "../pages/Counter";
 import HomePage from "../pages/Home";
+import Rank from "../pages/Rank";
 
 /**
  * TODO: Modify this constant to point to the URL of your backend.
@@ -36,4 +37,9 @@ export const PATHS: {
         label: "Counter",
         element: <Counter />,
     },
+    {
+        link: "/rank",
+        label: "Rank",
+        element: <Rank />,
+    }
 ];
