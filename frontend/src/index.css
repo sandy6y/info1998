@@ -96,6 +96,14 @@ form[action$="destroy"] button {
     border-width: 0;
 }
 
+.logo {
+    width: 100px;
+    height: 45px;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+}
+
 #root {
     display: flex;
     height: 100%;
