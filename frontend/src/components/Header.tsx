@@ -95,7 +95,6 @@ export function HeaderSimple({ links }: HeaderSimpleProps) {
     return (
         <Header height={60}>
             <Container className={classes.header}>
-                <ArrowUpCircle size={28} />
                 <Group spacing={5} className={classes.links}>
                     {items}
                 </Group>
