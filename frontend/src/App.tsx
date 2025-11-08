@@ -3,7 +3,6 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ErrorPage from "./pages/Error";
 import RootLayout from "./layouts/RootLayout";
 import ProfileLayout from "./layouts/ProfileLayout";
-import Profile from "./pages/Profile";
 import { PATHS } from "./constants/Navigation";
 import { SPATHS } from "./constants/SeriesNavigation";
 import "./index.css";
