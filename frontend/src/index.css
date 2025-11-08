@@ -96,6 +96,12 @@ form[action$="destroy"] button {
     border-width: 0;
 }
 
+.header-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .logo {
     width: 100px;
     height: 45px;
