@@ -1,11 +1,9 @@
 const HomePage = () => (
     <body>
         <center>
-            <h1>Blind box library</h1>
+            <h1>Welcome</h1>
+            <p>A website to showcase all the popmart blind box figures you have collected!</p>
         </center>
-        <h2>Profile</h2>
-        <p>Name:</p>
-        <p>Total figures: </p>
     </body>
 );
 
