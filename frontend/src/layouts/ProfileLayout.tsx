@@ -9,7 +9,7 @@ export default function ProfileLayout() {
       <h2>Profile</h2>
     
       <Profile />
-    
+
       <SeriesHeader />
 
       <section style={{ marginTop: "20px" }}>
