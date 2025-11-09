@@ -1,7 +1,7 @@
 import { HeaderSimple } from "../components/Header";
 import { PATHS } from "../constants/Navigation";
 import { Outlet } from "react-router-dom";
-import logo from "../images/POPLLECTION.jpg";
+import logo from "/images/POPLLECTION.jpg";
 
 const RootLayout = () => (
     <div>
