@@ -9,7 +9,15 @@
     border-radius: 8px;
     padding: 8px;
     text-align: center;
+    cursor: pointer;
     box-shadow: 0 0 10px 4px #efefef;
+}
+
+.counter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
 }
 
 .figureName {

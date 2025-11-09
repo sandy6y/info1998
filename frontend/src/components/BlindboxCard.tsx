@@ -7,8 +7,10 @@ type BlindboxCardProps = {
     blindbox: Blindbox;
 };
 
+
 const BlindboxCard = ({blindbox}: BlindboxCardProps) => {
     
+    const [count, setCount] = useState(0);
     const imagePath = `/images/${blindbox.characterName}/${blindbox.serieName}/${blindbox.serieNbr}.jpg`;
     
     return (
@@ -23,7 +25,17 @@ const BlindboxCard = ({blindbox}: BlindboxCardProps) => {
         {blindbox.name}
       </p>
     
-      <Minus size={15} />  <Plus size={15} /> 
+        <div className="counter">
+            <button onClick={() => setCount((count) => Math.max(0, count - 1))}>
+                <Minus size={15} /> 
+            </button>
+
+            {count}
+
+            <button onClick={() => setCount((count) => count + 1)}>
+                <Plus size={15} /> 
+            </button>
+        </div>
 
     </div>
     );
