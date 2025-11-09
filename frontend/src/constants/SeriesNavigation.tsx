@@ -10,17 +10,17 @@ export const SPATHS: {
     element?: JSX.Element;
 }[] = [
     {
-        link: "/skullpanda",
+        link: "skullpanda",
         label: "Skullpanda",
         element: <Skullpanda />,
     },
         {
-        link: "/hirono",
+        link: "hirono",
         label: "Hirono",
         element: <Hirono />,
     },
         {
-        link: "/labubu",
+        link: "labubu",
         label: "Labubu",
         element: <Labubu />,
     },

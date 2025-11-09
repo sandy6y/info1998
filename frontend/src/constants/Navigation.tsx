@@ -1,6 +1,6 @@
 import HomePage from "../pages/Home";
 import Rank from "../pages/Rank";
-import ProfileLayout from "../layouts/ProfileLayout"
+import ProfileLayout from "../layouts/ProfileLayout";
 
 /**
  * TODO: Modify this constant to point to the URL of your backend.

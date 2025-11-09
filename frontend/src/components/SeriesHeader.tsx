@@ -4,7 +4,7 @@ import {SPATHS} from "../constants/SeriesNavigation"
 export default function SeiresHeader() {
     const seriesLinks = SPATHS.map((item) => ({
     ...item,
-    link: `/profile${item.link}`,
+    link: `/profile/${item.link}`,
   }));
 
   return <HeaderSimple links={seriesLinks} />;
