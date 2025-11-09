@@ -1,10 +1,9 @@
-const Rank = () => (
-    <body>
-    <center>
-        <h1>Rank</h1>
-        <h2>Most Collected</h2>
-    </center>
-    </body>
-);
+const Rank = () => {
+  return (
+    <div className="rankPage">
+      <h2>Collector Rankings 🏆</h2>
+    </div>
+  );
+};
 
 export default Rank; 
