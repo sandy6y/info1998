@@ -14,7 +14,7 @@ import { Link } from "react-router-dom";
 const useStyles = createStyles((theme) => ({
     header: {
         display: "flex",
-        justifyContent: "start",
+        justifyContent: "space-around",
         gap: "2rem",
         alignItems: "center",
         height: "100%",
