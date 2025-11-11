@@ -1,5 +1,6 @@
 import { MantineProvider } from "@mantine/core";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { CollectedProvider } from "./context/CollectedContext";
 import ErrorPage from "./pages/Error";
 import RootLayout from "./layouts/RootLayout";
 import ProfileLayout from "./layouts/ProfileLayout";
@@ -34,7 +35,9 @@ const router = createBrowserRouter([
 export default function App() {
     return (
         <MantineProvider withGlobalStyles withNormalizeCSS>
-            <RouterProvider router={router} />
+            <CollectedProvider>
+              <RouterProvider router={router} />
+            </CollectedProvider>
         </MantineProvider>
     );
 }

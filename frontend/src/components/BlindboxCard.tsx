@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./styles.css";
-import { Plus } from "lucide-react";
-import { Minus } from "lucide-react";
+import { useCollected } from "../context/CollectedContext";
+import { Plus, Minus } from "lucide-react";
 
 type BlindboxCardProps = {
     blindbox: Blindbox;
@@ -11,8 +11,22 @@ type BlindboxCardProps = {
 const BlindboxCard = ({blindbox}: BlindboxCardProps) => {
     
     const [count, setCount] = useState(0);
+    const {increase, decrease } = useCollected();
+
+    const handlePlus = () => {
+      setCount((prev) => prev + 1);
+      increase();
+    }
+
+    const handleMinus = () => {
+      if (count > 0) {
+        setCount((prev) => prev - 1);
+        decrease(); 
+      }
+    }
+
     const imagePath = `/images/${blindbox.characterName}/${blindbox.serieName}/${blindbox.serieNbr}.jpg`;
-    
+
     return (
     <div className="boxCard">
       <img 
@@ -26,17 +40,14 @@ const BlindboxCard = ({blindbox}: BlindboxCardProps) => {
       </p>
     
         <div className="counter">
-            <button onClick={() => setCount((count) => Math.max(0, count - 1))}>
+            <button onClick={handleMinus}>
                 <Minus size={15} /> 
             </button>
-
             {count}
-
-            <button onClick={() => setCount((count) => count + 1)}>
+            <button onClick={handlePlus}>
                 <Plus size={15} /> 
             </button>
         </div>
-
     </div>
     );
 };

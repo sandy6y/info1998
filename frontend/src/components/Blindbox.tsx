@@ -15,7 +15,7 @@ const Blindbox = ({ characterName, serieName }: BlindboxProps) => {
     );
     
     return (
-        <div className="blindbox-list">
+        <div className="card-container">
             {filteredBoxes.map((blindbox) => (
                 <BlindboxCard 
                 key={`${blindbox.characterName}-${blindbox.serieName}-${blindbox.serieNbr}`} 

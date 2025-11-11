@@ -5,24 +5,19 @@ import logo from "/images/POPLLECTION.jpg";
 import { LogOut } from "lucide-react";
 
 const RootLayout = () => (
-    <div>
+    <div className="app-container">
         <div className="banner-block">
-            <div className="banner-center">
-                <img src={logo} alt="Logo" className="logo" /> 
-            </div>
-
-            <div className="banner-right">
-                <p className="logout">
-                    <button> <LogOut size={20} /> Log Out</button>  
-                </p>
-            </div>
+            <img src={logo} alt="Logo" className="logo" /> 
+            <button className="logout">
+                <LogOut size={20} /> Log Out 
+            </button>
         </div>
 
     <HeaderSimple links={PATHS} />
 
-    <div>
+    <main className="main-content">
       <Outlet />
-    </div>
+    </main>
     </div>
 );
 
