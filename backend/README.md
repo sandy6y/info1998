@@ -1,13 +1,4 @@
-# Popmart Collection Backend
-
-Express.js + TypeScript backend for Popmart blind box collection web app.
-
-## Quick Start
-
-```bash
-pnpm install
-pnpm dev  # Server runs on http://localhost:8080
-```
+## As of 11/12: MS2
 
 ### Authentication
 
@@ -67,7 +58,3 @@ curl http://localhost:8080/collections/figures/all
   - Shelter: 13 figures
 - **Labubu**: lb-001 to lb-007 (7 total)
   - Exciting Macaron: 7 figures
-
-## Status
-
-TODO: Connect Firebase for real data
