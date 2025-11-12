@@ -36,14 +36,6 @@
 - `POST /posts/:postId/comments` - Add comment
 - `DELETE /comments/:commentId` - Delete comment
 
-## Test It
-
-```bash
-curl http://localhost:8080/health
-curl http://localhost:8080/users/rankings
-curl http://localhost:8080/collections/figures/all
-```
-
 ## Figure Library
 
 82 figures across 3 series (as of 11/12):
