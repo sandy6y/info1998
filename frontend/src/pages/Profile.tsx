@@ -97,6 +97,11 @@ const Profile = () => {
     <div style={{ textAlign: "center" }}>
       <h1>{user.displayName}'s Profile</h1>
       <p>Total figures collected: {collection.length}</p>
+      <p>
+        Note: These are mock data, later will update backend so users can 
+        type in the figure id and the image will be the default image or they
+        can name the figure and upload their own image.
+      </p>
       <button onClick={handleAddFigure}>Add Figure</button>
 
       <div

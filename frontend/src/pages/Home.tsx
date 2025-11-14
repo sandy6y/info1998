@@ -36,7 +36,6 @@ const HomePage = () => {
       <h1>Welcome!</h1>
       <p>This is a website to showcase all the Popmart blind box figures you have collected!</p>
       <p>Feel free to upload an image of all the collected figures</p>
-
       {user ? (
         <p>Signed in as: {user.displayName}</p>
       ) : (
@@ -58,6 +57,10 @@ const HomePage = () => {
           {error && <p style={{ color: "red" }}>{error}</p>}
         </div>
       )}
+      <p>Note: the sign in currently does nothing, just clicking on the log in button will
+        utilize the mock data in backend. Will later implement authentication with firebase.
+      </p>
+
     </div>
   );
 };
