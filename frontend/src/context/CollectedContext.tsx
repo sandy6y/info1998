@@ -1,28 +1,27 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState } from "react";
 
-interface CollectedContextType {
+type CollectedContextType = {
   totalCount: number;
-  increase: () => void;
-  decrease: () => void;
-}
+  setTotalCount: React.Dispatch<React.SetStateAction<number>>;
+};
 
-const CollectedContext = createContext<CollectedContextType | undefined>(undefined);
+// Create the context with a typed union to allow null initially
+const CollectedContext = createContext<CollectedContextType | null>(null);
 
-export const CollectedProvider = ({ children }: { children: ReactNode }) => {
+export function CollectedProvider({ children }: { children: React.ReactNode }) {
   const [totalCount, setTotalCount] = useState(0);
 
-  const increase = () => setTotalCount((prev) => prev + 1);
-  const decrease = () => setTotalCount((prev) => (prev > 0 ? prev - 1 : 0));
-
   return (
-    <CollectedContext.Provider value={{ totalCount, increase, decrease }}>
+    <CollectedContext.Provider value={{ totalCount, setTotalCount }}>
       {children}
     </CollectedContext.Provider>
   );
-};
+}
 
-export const useCollected = () => {
-  const context = useContext(CollectedContext);
-  if (!context) throw new Error("useCollected must be used inside CollectedProvider");
-  return context;
-};
+export function useCollected() {
+  const ctx = useContext(CollectedContext);
+  if (!ctx) {
+    throw new Error("useCollected must be used inside a CollectedProvider");
+  }
+  return ctx;
+}

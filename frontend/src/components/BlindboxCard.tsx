@@ -1,7 +1,4 @@
-import { useEffect, useState } from "react";
-import "./styles.css";
-import { useCollected } from "../context/CollectedContext";
-import { Plus, Minus } from "lucide-react";
+// ====== Blind Box Card Format =====
 
 type BlindboxCardProps = {
     blindbox: Blindbox;
@@ -10,20 +7,6 @@ type BlindboxCardProps = {
 
 const BlindboxCard = ({blindbox}: BlindboxCardProps) => {
     
-    const [count, setCount] = useState(0);
-    const {increase, decrease } = useCollected();
-
-    const handlePlus = () => {
-      setCount((prev) => prev + 1);
-      increase();
-    }
-
-    const handleMinus = () => {
-      if (count > 0) {
-        setCount((prev) => prev - 1);
-        decrease(); 
-      }
-    }
 
     const imagePath = `/images/${blindbox.characterName}/${blindbox.serieName}/${blindbox.serieNbr}.jpg`;
 
@@ -39,15 +22,6 @@ const BlindboxCard = ({blindbox}: BlindboxCardProps) => {
         {blindbox.name}
       </p>
     
-        <div className="counter">
-            <button onClick={handleMinus}>
-                <Minus size={15} /> 
-            </button>
-            {count}
-            <button onClick={handlePlus}>
-                <Plus size={15} /> 
-            </button>
-        </div>
     </div>
     );
 };

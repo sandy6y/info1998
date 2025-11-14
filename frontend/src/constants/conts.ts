@@ -1,3 +1,5 @@
+// ====== Blind Box Library Specifics =====
+
 export const BLINDBOX: Blindbox[] = [
     {
         characterName: "Skullpanda",

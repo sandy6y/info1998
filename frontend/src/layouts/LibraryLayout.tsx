@@ -1,15 +1,12 @@
 import { Outlet } from "react-router-dom";
 import SeriesHeader from "../components/SeriesHeader";
-import Profile from "../pages/Profile";
 
-export default function ProfileLayout() {
+export default function LibraryLayout() {
   return (
     <main style={{ textAlign: "center" }}>
       <h1>Blind Box Library</h1>
-      <h2>Profile</h2>
+      <p>Click on each series to see what figures exists</p>
     
-      <Profile />
-
       <SeriesHeader />
 
       <section style={{ marginTop: "20px" }}>

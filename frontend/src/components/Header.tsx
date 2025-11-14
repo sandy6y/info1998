@@ -1,3 +1,4 @@
+// ====== Header with main pages =====
 
 import { useState } from "react";
 import {

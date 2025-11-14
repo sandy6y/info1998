@@ -1,8 +1,8 @@
+// ====== Blind Box Page =====
+
 import "./styles.css"
-import {useState} from "react";
 import BlindboxCard from "./BlindboxCard";
 import { BLINDBOX } from "../constants/conts";
-
 
 type BlindboxProps = {
     characterName: string;

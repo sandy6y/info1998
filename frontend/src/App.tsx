@@ -3,7 +3,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { CollectedProvider } from "./context/CollectedContext";
 import ErrorPage from "./pages/Error";
 import RootLayout from "./layouts/RootLayout";
-import ProfileLayout from "./layouts/ProfileLayout";
+import LibraryLayout from "./layouts/LibraryLayout";
 import { PATHS } from "./constants/Navigation";
 import { SPATHS } from "./constants/SeriesNavigation"
 import "./index.css";
@@ -20,8 +20,8 @@ const router = createBrowserRouter([
         })),
 
       {
-        path: "profile",
-        element: <ProfileLayout />,
+        path: "library",
+        element: <LibraryLayout />,
         children: SPATHS.map((item) => ({
           path: item.link, 
           element: item.element,
