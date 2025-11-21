@@ -1,8 +1,12 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import path from "path";
-import express, { Express } from "express";
+import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import { WeatherResponse } from "@full-stack/types";
 import fetch from "node-fetch";
+import routes from "./routes";
 
 // Import route handlers
 import authRoutes from "./routes/authRoutes";
@@ -17,6 +21,7 @@ const port = 8080;
 
 app.use(cors());
 app.use(express.json());
+app.use("/api", routes);
 
 // ===== POPMART COLLECTION API ROUTES =====
 
@@ -70,7 +75,7 @@ type WeatherData = {
     };
 };
 
-app.get("/weather", async (req, res) => {
+app.get("/api/weather", async (_req: Request, res: Response) => {
     console.log("GET /api/weather was called");
     try {
         const response = await fetch(

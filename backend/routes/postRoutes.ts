@@ -6,6 +6,18 @@ import {
     CreateCommentRequest,
     Like
 } from "@full-stack/types";
+import {
+    getUserPosts,
+    getPostById,
+    createPost,
+    togglePostReveal,
+    deletePost,
+    togglePostLike,
+    getPostLikes,
+    getPostComments,
+    addComment,
+    deleteComment
+} from "../services/postService";
 
 const router: Router = Router();
 
@@ -20,33 +32,8 @@ router.get("/user/:userId", async (req: Request, res: Response) => {
     try {
         const { userId } = req.params;
 
-        // This is what we did for MS2: Implement get user posts logic
-        const mockPosts: Post[] = [
-            {
-                id: "post-001",
-                userId,
-                figureId: "sp-001",
-                imageUrl: "https://placeholder-url.com/post-image-1.jpg",
-                caption: "My first Skull Panda!",
-                isRevealed: true,
-                likeCount: 15,
-                commentCount: 3,
-                createdAt: "2024-03-01T00:00:00Z"
-            },
-            {
-                id: "post-002",
-                userId,
-                figureId: "hr-002",
-                imageUrl: "https://placeholder-url.com/post-image-2.jpg",
-                caption: "Cherry blossom edition",
-                isRevealed: false,
-                likeCount: 8,
-                commentCount: 1,
-                createdAt: "2024-03-10T00:00:00Z"
-            }
-        ];
-
-        res.json(mockPosts);
+        const posts = await getUserPosts(userId);
+        res.json(posts);
     } catch (error) {
         console.error("Get user posts error:", error);
         res.status(500).json({ error: "Failed to fetch posts" });
@@ -61,20 +48,13 @@ router.get("/:postId", async (req: Request, res: Response) => {
     try {
         const { postId } = req.params;
 
-        // This is what we did for MS2: Implement get post logic
-        const mockPost: Post = {
-            id: postId,
-            userId: "user-001",
-            figureId: "sp-001",
-            imageUrl: "https://placeholder-url.com/post-image.jpg",
-            caption: "My favorite figure!",
-            isRevealed: true,
-            likeCount: 20,
-            commentCount: 5,
-            createdAt: "2024-03-01T00:00:00Z"
-        };
+        const post = await getPostById(postId);
 
-        res.json(mockPost);
+        if (!post) {
+            return res.status(404).json({ error: "Post not found" });
+        }
+
+        res.json(post);
     } catch (error) {
         console.error("Get post error:", error);
         res.status(404).json({ error: "Post not found" });
@@ -87,20 +67,15 @@ router.get("/:postId", async (req: Request, res: Response) => {
  */
 router.post("/", async (req: Request, res: Response) => {
     try {
-        const { figureId, imageUrl, caption } = req.body;
+        const { userId, figureId, imageUrl, caption, isRevealed } = req.body;
 
-        // This is what we did for MS2: Implement create post logic
-        const newPost: Post = {
-            id: `post-${Date.now()}`,
-            userId: "user-001", // Should come from authenticated user
+        const newPost = await createPost({
+            userId,
             figureId,
             imageUrl,
             caption,
-            isRevealed: false, // Starts as not greyed-out
-            likeCount: 0,
-            commentCount: 0,
-            createdAt: new Date().toISOString()
-        };
+            isRevealed: isRevealed || false
+        });
 
         res.status(201).json(newPost);
     } catch (error) {
@@ -118,22 +93,13 @@ router.put("/:postId/reveal", async (req: Request, res: Response) => {
     try {
         const { postId } = req.params;
 
-        // This is what we did for MS2: Implement reveal toggle logic
-        const updatedPost: Post = {
-            id: postId,
-            userId: "user-001",
-            figureId: "sp-001",
-            imageUrl: "https://placeholder-url.com/post-image.jpg",
-            caption: "Now revealed!",
-            isRevealed: true, // Changed to revealed
-            likeCount: 10,
-            commentCount: 2,
-            createdAt: "2024-03-01T00:00:00Z"
-        };
-
+        const updatedPost = await togglePostReveal(postId);
         res.json(updatedPost);
-    } catch (error) {
+    } catch (error: any) {
         console.error("Reveal post error:", error);
+        if (error.message === "Post not found") {
+            return res.status(404).json({ error: error.message });
+        }
         res.status(500).json({ error: "Failed to reveal post" });
     }
 });
@@ -146,13 +112,16 @@ router.delete("/:postId", async (req: Request, res: Response) => {
     try {
         const { postId } = req.params;
 
-        // This is what we did for MS2: Implement delete post logic
+        await deletePost(postId);
         res.json({
             message: "Post deleted successfully",
             postId
         });
-    } catch (error) {
+    } catch (error: any) {
         console.error("Delete post error:", error);
+        if (error.message === "Post not found") {
+            return res.status(404).json({ error: error.message });
+        }
         res.status(500).json({ error: "Failed to delete post" });
     }
 });
@@ -166,17 +135,15 @@ router.delete("/:postId", async (req: Request, res: Response) => {
 router.post("/:postId/like", async (req: Request, res: Response) => {
     try {
         const { postId } = req.params;
+        const { userId } = req.body;
 
-        // This is what we did for MS2: Implement like toggle logic
-        const mockResponse = {
-            postId,
-            liked: true, // true if just liked, false if unliked
-            likeCount: 21
-        };
-
-        res.json(mockResponse);
-    } catch (error) {
+        const result = await togglePostLike(postId, userId);
+        res.json(result);
+    } catch (error: any) {
         console.error("Toggle like error:", error);
+        if (error.message === "Post not found") {
+            return res.status(404).json({ error: error.message });
+        }
         res.status(500).json({ error: "Failed to toggle like" });
     }
 });
@@ -189,23 +156,8 @@ router.get("/:postId/likes", async (req: Request, res: Response) => {
     try {
         const { postId } = req.params;
 
-        // This is what we did for MS2: Implement get likes logic
-        const mockLikes: Like[] = [
-            {
-                id: "like-001",
-                postId,
-                userId: "user-002",
-                createdAt: "2024-03-02T00:00:00Z"
-            },
-            {
-                id: "like-002",
-                postId,
-                userId: "user-003",
-                createdAt: "2024-03-03T00:00:00Z"
-            }
-        ];
-
-        res.json(mockLikes);
+        const likes = await getPostLikes(postId);
+        res.json(likes);
     } catch (error) {
         console.error("Get likes error:", error);
         res.status(500).json({ error: "Failed to fetch likes" });
@@ -222,28 +174,8 @@ router.get("/:postId/comments", async (req: Request, res: Response) => {
     try {
         const { postId } = req.params;
 
-        // This is what we did for MS2: Implement get comments logic
-        const mockComments: Comment[] = [
-            {
-                id: "comment-001",
-                postId,
-                userId: "user-002",
-                userName: "Collector Friend",
-                userProfilePicUrl: "https://placeholder-url.com/user2.jpg",
-                content: "Amazing figure! Where did you get it?",
-                createdAt: "2024-03-02T00:00:00Z"
-            },
-            {
-                id: "comment-002",
-                postId,
-                userId: "user-003",
-                userName: "Figure Fan",
-                content: "I want this one too!",
-                createdAt: "2024-03-03T00:00:00Z"
-            }
-        ];
-
-        res.json(mockComments);
+        const comments = await getPostComments(postId);
+        res.json(comments);
     } catch (error) {
         console.error("Get comments error:", error);
         res.status(500).json({ error: "Failed to fetch comments" });
@@ -257,18 +189,13 @@ router.get("/:postId/comments", async (req: Request, res: Response) => {
 router.post("/:postId/comments", async (req: Request, res: Response) => {
     try {
         const { postId } = req.params;
-        const { content } = req.body;
+        const { userId, text } = req.body;
 
-        // This is what we did for MS2: Implement create comment logic
-        const newComment: Comment = {
-            id: `comment-${Date.now()}`,
+        const newComment = await addComment({
             postId,
-            userId: "user-001", // Should come from authenticated user
-            userName: "Current User",
-            userProfilePicUrl: "https://placeholder-url.com/user.jpg",
-            content,
-            createdAt: new Date().toISOString()
-        };
+            userId,
+            text
+        });
 
         res.status(201).json(newComment);
     } catch (error) {
@@ -285,13 +212,16 @@ router.delete("/comments/:commentId", async (req: Request, res: Response) => {
     try {
         const { commentId } = req.params;
 
-        // This is what we did for MS2: Implement delete comment logic
+        await deleteComment(commentId);
         res.json({
             message: "Comment deleted successfully",
             commentId
         });
-    } catch (error) {
+    } catch (error: any) {
         console.error("Delete comment error:", error);
+        if (error.message === "Comment not found") {
+            return res.status(404).json({ error: error.message });
+        }
         res.status(500).json({ error: "Failed to delete comment" });
     }
 });

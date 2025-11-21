@@ -1,7 +1,5 @@
 import { Figure, FigureLibrary } from "@full-stack/types";
 
-// Figure library with ALL Popmart blind box figures from your collection!
-
 export const figures: Figure[] = [
     // ===== Skull Panda - The Paradox (13 figures) as of 11/12 =====
     ...Array.from({ length: 13 }, (_, i) => ({

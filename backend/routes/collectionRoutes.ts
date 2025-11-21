@@ -7,6 +7,13 @@ import {
     CollectedFigure
 } from "@full-stack/types";
 import { figures, figureLibrary, getFiguresBySeries } from "../figureData";
+import {
+    getUserCollection,
+    getUserCollectionBySeries,
+    addFigureToCollection,
+    removeFigureFromCollection,
+    reorderCollection
+} from "../services/collectionService";
 
 const router: Router = Router();
 
@@ -18,28 +25,8 @@ router.get("/:userId", async (req: Request, res: Response) => {
     try {
         const { userId } = req.params;
 
-        // This is what we did for MS2: Implement get collection logic
-        const mockCollection: UserCollection = {
-            userId,
-            figures: [
-                {
-                    figureId: "sp-001",
-                    collectedAt: "2024-03-01T00:00:00Z",
-                    order: 0,
-                    userImageUrl: "https://placeholder-url.com/my-figure.jpg",
-                    isRevealed: true
-                },
-                {
-                    figureId: "hr-002",
-                    collectedAt: "2024-03-10T00:00:00Z",
-                    order: 1,
-                    isRevealed: false
-                }
-            ],
-            updatedAt: new Date().toISOString()
-        };
-
-        res.json(mockCollection);
+        const collection = await getUserCollection(userId);
+        res.json(collection);
     } catch (error) {
         console.error("Get collection error:", error);
         res.status(500).json({ error: "Failed to fetch collection" });
@@ -55,36 +42,8 @@ router.get("/:userId/by-series", async (req: Request, res: Response) => {
     try {
         const { userId } = req.params;
 
-        // This is what we did for MS2: Implement get collection by series logic
-
-        const mockCollectionBySeries: CollectionBySeries[] = [
-            {
-                series: "Skull Panda",
-                count: 3,
-                figures: [
-                    {
-                        figureId: "sp-001",
-                        collectedAt: "2024-03-01T00:00:00Z",
-                        order: 0,
-                        isRevealed: true
-                    }
-                ]
-            },
-            {
-                series: "Hirono",
-                count: 2,
-                figures: [
-                    {
-                        figureId: "hr-002",
-                        collectedAt: "2024-03-10T00:00:00Z",
-                        order: 0,
-                        isRevealed: false
-                    }
-                ]
-            }
-        ];
-
-        res.json(mockCollectionBySeries);
+        const collectionBySeries = await getUserCollectionBySeries(userId);
+        res.json(collectionBySeries);
     } catch (error) {
         console.error("Get collection by series error:", error);
         res.status(500).json({ error: "Failed to fetch collection by series" });
@@ -98,24 +57,23 @@ router.get("/:userId/by-series", async (req: Request, res: Response) => {
 router.post("/:userId/figures", async (req: Request, res: Response) => {
     try {
         const { userId } = req.params;
-        const { figureId, userImageUrl } = req.body;
+        const { figureId, userImageUrl, isRevealed } = req.body;
 
-        // This is what we did for MS2: Implement add figure logic
-
-        const newCollectedFigure: CollectedFigure = {
+        const newFigure = await addFigureToCollection(userId, {
             figureId,
-            collectedAt: new Date().toISOString(),
-            order: 0, // Will be calculated based on existing figures
             userImageUrl,
-            isRevealed: false
-        };
+            isRevealed: isRevealed || false
+        });
 
         res.status(201).json({
             message: "Figure added to collection",
-            figure: newCollectedFigure
+            figure: newFigure
         });
-    } catch (error) {
+    } catch (error: any) {
         console.error("Add figure error:", error);
+        if (error.message === "Figure already in collection") {
+            return res.status(400).json({ error: error.message });
+        }
         res.status(500).json({ error: "Failed to add figure to collection" });
     }
 });
@@ -128,14 +86,17 @@ router.delete("/:userId/figures/:figureId", async (req: Request, res: Response) 
     try {
         const { userId, figureId } = req.params;
 
-        // This is what we did for MS2: Implement delete figure logic
+        await removeFigureFromCollection(userId, figureId);
 
         res.json({
             message: "Figure removed from collection",
             figureId
         });
-    } catch (error) {
+    } catch (error: any) {
         console.error("Delete figure error:", error);
+        if (error.message === "Collection not found" || error.message === "Figure not found in collection") {
+            return res.status(404).json({ error: error.message });
+        }
         res.status(500).json({ error: "Failed to remove figure from collection" });
     }
 });
@@ -149,13 +110,17 @@ router.put("/:userId/reorder", async (req: Request, res: Response) => {
         const { userId } = req.params;
         const { figureOrders } = req.body;
 
-        // This is what we did for MS2: Implement reorder collection logic
+        const reorderedFigures = await reorderCollection(userId, figureOrders);
+
         res.json({
             message: "Collection reordered successfully",
-            figureOrders
+            figures: reorderedFigures
         });
-    } catch (error) {
+    } catch (error: any) {
         console.error("Reorder collection error:", error);
+        if (error.message === "Collection not found" || error.message?.includes("not found in collection")) {
+            return res.status(404).json({ error: error.message });
+        }
         res.status(500).json({ error: "Failed to reorder collection" });
     }
 });

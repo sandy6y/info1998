@@ -1,3 +1,53 @@
+## As of 11/21 -- MS3
+
+## Firebase Setup for Google Authentication
+
+### Prerequisites
+
+1. Install Node.js and npm 
+2. Create a Firebase project at Firebase Console
+
+### Step 1: Enable Google Authentication in Firebase
+
+1. Go to Firebase Console
+2. Select the project
+3. Navigate to Authentication, then Sign-in method
+4. Enable Google as a sign-in provider
+5. Add the domain to the authorized domains list
+
+### Step 2: Get Firebase Admin SDK Credentials
+
+1. In Firebase Console, go to Project Settings
+2. Navigate to Service Accounts** tab
+3. Click Generate New Private Key
+4. Save the JSON file 
+
+### Step 3: Configure Environment Variables
+
+1. Create a `.env` file in the backend directory
+2. Copy contents from `.env.example`:
+3. Open the service account JSON file downloaded in Step 2
+4. Fill in the Firebase credentials in the `.env` file:
+   ```
+   FIREBASE_PROJECT_ID=your-project-id
+   FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@your-project-id.iam.gserviceaccount.com
+   FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+   ```
+
+### Step 4: Install Dependencies
+
+```bash
+cd backend
+npm install
+```
+
+### Step 5: Run the Server
+
+```bash
+npm run dev
+```
+---
+
 ## As of 11/12: MS2
 
 ### Authentication
