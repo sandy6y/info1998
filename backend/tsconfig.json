@@ -5,7 +5,20 @@
         "strict": true,
         "declaration": true,
         "outDir": "./dist",
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "baseUrl": ".",
+        "paths": {
+            "@full-stack/types": [
+                "../lib/types"
+            ]
+        }
     },
-    "include": ["**/*.ts"]
+    "include": [
+        "**/*.ts"
+    ],
+    "ts-node": {
+        "require": [
+            "tsconfig-paths/register"
+        ]
+    }
 }
