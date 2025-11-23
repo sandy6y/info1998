@@ -1,66 +1,55 @@
-import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "../firebase/firebaseClient";
 
 const HomePage = () => {
   const { user, setUser, setToken } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
 
-  //login 
-  const handleLogin = async () => {
+  const handleGoogleLogin = async () => {
     try {
-      const response = await fetch("http://localhost:8080/auth/login", {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const idToken = await result.user.getIdToken();
+
+      // Send token to backend
+      const res = await fetch("http://localhost:8080/auth/google", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
       });
 
-      if (!response.ok) {
-        throw new Error("Invalid email or password");
-      }
-
-      const data = await response.json();
-      setUser(data.user);   
-      setToken(data.token); 
-      setError("");
-    } catch (err: any) {
-      setError(err.message);
+      const data = await res.json();
+      setToken(idToken); // store for future API requests
+      setUser(data.user); // update user state
+    } catch (error) {
+      console.error("Google login error:", error);
+      alert("Failed to login with Google");
     }
   };
 
   return (
     <div style={{ textAlign: "center" }}>
-      <h1>Welcome!</h1>
-      <p>This is a website to showcase all the Popmart blind box figures you have collected!</p>
-      <p>Feel free to upload an image of all the collected figures</p>
+      <h1>{user ? `Welcome ${user.displayName}!` : "Welcome!"}</h1>
+      <p>Showcase your Popmart blind box collection here</p>
+
       {user ? (
-        <p>Signed in as: {user.displayName}</p>
+        <div>
+          {user.photoURL && (
+            <img
+              src={user.photoURL}
+              alt="Profile"
+              style={{ width: "80px", borderRadius: "50%" }}
+            />
+          )}
+          <p>You can now view your collection and stats.</p>
+        </div>
       ) : (
         <div>
-          <p>Sign in here:</p>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button onClick={handleLogin}>Log In</button>
-          {error && <p style={{ color: "red" }}>{error}</p>}
+          <button onClick={handleGoogleLogin}>
+            Sign in with Google
+          </button>
         </div>
       )}
-      <p>Note: the sign in currently does nothing, just clicking on the log in button will
-        utilize the mock data in backend. Will later implement authentication with firebase.
-      </p>
-
     </div>
   );
 };

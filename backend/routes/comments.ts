@@ -10,7 +10,7 @@ type Comment = {
 
 const COMMENTS: Comment[] = [];
 
-const r = Router();
+const r: Router = Router();
 
 // GET /comments?collectibleId=xxx
 r.get("/", (req: Request, res: Response) => {

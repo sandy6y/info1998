@@ -6,7 +6,7 @@ const USERS: Array<{ id: string; name: string; email: string; profilePic: string
     { id: "u3", name: "Kat", email: "kat@example.com", profilePic: "", owned: [] }
 ];
 
-const r = Router();
+const r: Router = Router();
 
 r.get("/leaderboard", (req: Request, res: Response) => {
     const limit = Number(req.query.limit ?? 50);

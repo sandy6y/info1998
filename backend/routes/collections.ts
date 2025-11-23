@@ -10,7 +10,14 @@ type UserCollectible = {
 
 const USER_ITEMS: UserCollectible[] = [];
 
-const r = Router();
+const r: Router = Router();
+
+// GET /collections { userId }
+r.get("/:userId", (req: Request, res: Response) => {
+    const { userId } = req.params;
+    const userItems = USER_ITEMS.filter(x => x.userId === userId);
+    res.json({ userId, figures: userItems }); 
+});
 
 // POST /collections  { userId, collectibleId, revealPicUrl? }
 r.post("/", (req: Request, res: Response) => {
@@ -21,6 +28,8 @@ r.post("/", (req: Request, res: Response) => {
     const sortIndex = USER_ITEMS.filter(x => x.userId === userId).length + 1;
     const row = { id: `uc_${Date.now()}`, userId, collectibleId, revealPicUrl, sortIndex };
     USER_ITEMS.push(row);
+
+    const userItems = USER_ITEMS.filter(x => x.userId === userId);
     res.status(201).json(row);
 });
 

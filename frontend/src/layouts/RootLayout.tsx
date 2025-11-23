@@ -4,31 +4,43 @@ import { Outlet } from "react-router-dom";
 import logo from "/images/POPLLECTION.jpg";
 import { LogOut } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { auth } from "../firebase/firebaseClient";
 
 const RootLayout = () => {
-    const { setUser, setToken } = useAuth();
+    const { user, setUser, setToken } = useAuth();
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        try {
+            await auth.signOut();
+        } catch (err) {
+            console.error("Firebase signOut failed:", err);
+        }
+
+        // Clear frontend auth state
         setUser(null);
         setToken("");
-    }
+    };
+
     return (
         <div className="app-container">
             <div className="banner-block">
                 <img src={logo} alt="Logo" className="logo" /> 
+
+                {user && (
                     <p className="logout">
                         <button onClick={handleLogout}>
                             <LogOut size={20} /> Log Out
                         </button>
                     </p>
+                )}
             </div>
 
-        <HeaderSimple links={PATHS} />
+            <HeaderSimple links={PATHS} />
 
-        <main className="main-content">
-        <Outlet />
-        </main>
-    </div>
+            <main className="main-content">
+                <Outlet />
+            </main>
+        </div>
     );
 };
 

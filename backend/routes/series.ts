@@ -2,7 +2,7 @@ import { Router, Request, Response } from "express";
 import { SERIES } from "../data/series";
 import { COLLECTIBLES } from "../data/collectibles";
 
-const r = Router();
+const r: Router = Router();
 
 r.get("/", (_req: Request, res: Response) => res.json(SERIES));
 

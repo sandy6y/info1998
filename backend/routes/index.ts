@@ -6,7 +6,7 @@ import collections from "./collections";
 import likes from "./likes";
 import comments from "./comments";
 
-const r = Router();
+const r: Router = Router();
 
 r.use("/auth", auth);
 r.use("/users", users);

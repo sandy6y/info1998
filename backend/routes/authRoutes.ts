@@ -80,37 +80,23 @@ router.post("/google", async (req: Request, res: Response) => {
  */
 router.get("/me", async (req: Request, res: Response) => {
     try {
-        let userId: string | undefined;
-
-        // Try to get userId from query parameter
-        userId = req.query.userId as string;
-
-        // If no query param, try to verify Authorization header
-        if (!userId) {
-            const authHeader = req.headers.authorization;
-            if (authHeader && authHeader.startsWith("Bearer ")) {
-                const idToken = authHeader.substring(7);
-                try {
-                    const decodedToken = await auth.verifyIdToken(idToken);
-                    userId = decodedToken.uid;
-                } catch (error) {
-                    return res.status(401).json({ error: "Invalid or expired token" });
-                }
-            }
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            return res.status(401).json({ error: "Authorization token required"});
         }
 
-        if (!userId) {
+        const idToken = authHeader.substring(7);
+        const decodedToken = await auth.verifyIdToken(idToken);
+        const userId = decodedToken.uid; 
+
+        const user = await getUserById(userId)
+        if (!user) {
             return res.status(400).json({
                 error: "User ID required. Provide userId query param or Authorization header"
             });
+
         }
-
-        const user = await getUserById(userId);
-
-        if (!user) {
-            return res.status(404).json({ error: "User not found" });
-        }
-
+        
         res.json(user);
     } catch (error) {
         console.error("Get user error:", error);

@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express";
 
-const r = Router();
+const r: Router = Router();
 
 // POST /auth/login
 r.post("/login", (req: Request, res: Response) => {
