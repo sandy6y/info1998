@@ -35,7 +35,7 @@ export function CollectedProvider({ children }: { children: React.ReactNode }) {
   // Fetch figure library from backend
   const fetchFigureLibrary = async () => {
     try {
-      const res = await fetch("http://localhost:8080/figures/all");
+      const res = await fetch("http://localhost:8080/collections/figures/all");
       if (!res.ok) throw new Error("Failed to fetch figure library");
       const figures = await res.json();
 

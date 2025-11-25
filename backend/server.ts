@@ -1,3 +1,4 @@
+// IMPORTANT: Load environment variables FIRST before any other imports
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -6,13 +7,14 @@ import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import { WeatherResponse } from "@full-stack/types";
 import fetch from "node-fetch";
-import routes from "./routes";
 
-// Import route handlers
-import authRoutes from "./routes/authRoutes";
-import userRoutes from "./routes/userRoutes";
-import collectionRoutes from "./routes/collectionRoutes";
-import postRoutes from "./routes/postRoutes";
+// Delay importing routes until after environment is configured
+// This ensures Firebase config can access environment variables
+const routes = require("./routes").default;
+const authRoutes = require("./routes/authRoutes").default;
+const userRoutes = require("./routes/userRoutes").default;
+const collectionRoutes = require("./routes/collectionRoutes").default;
+const postRoutes = require("./routes/postRoutes").default;
 
 const app: Express = express();
 
