@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useAuth } from "./AuthContext";
 
-// Define figure type for frontend
+// Frontend CollectedFigure type
 export type CollectedFigure = {
   backendId: string;
   figureId: string;
@@ -29,8 +29,8 @@ export function CollectedProvider({ children }: { children: React.ReactNode }) {
   const [collectionBySeries, setCollectionBySeries] = useState<CollectionBySeries>({});
   const [totalCount, setTotalCount] = useState(0);
 
-  // Store figure library fetched from backend
   const [figureLibrary, setFigureLibrary] = useState<Record<string, any>>({});
+  const [collectibleToFigureMap, setCollectibleToFigureMap] = useState<Record<string, string>>({});
 
   // Fetch figure library from backend
   const fetchFigureLibrary = async () => {
@@ -38,19 +38,32 @@ export function CollectedProvider({ children }: { children: React.ReactNode }) {
       const res = await fetch("http://localhost:8080/figures/all");
       if (!res.ok) throw new Error("Failed to fetch figure library");
       const figures = await res.json();
+
       const library: Record<string, any> = {};
+      const map: Record<string, string> = {};
+
       figures.forEach((fig: any) => {
         library[fig.id] = fig;
+
+        // If backend collectibleId matches fig.id, use it
+        // Otherwise, derive a mapping (adjust if needed)
+        if (fig.collectibleId) {
+          map[fig.collectibleId] = fig.id;
+        } else {
+          map[fig.id] = fig.id; // fallback
+        }
       });
+
       setFigureLibrary(library);
+      setCollectibleToFigureMap(map);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching figure library:", err);
     }
   };
 
   // Refresh user collection
   const refreshCollection = async () => {
-    if (!user || !figureLibrary) return;
+    if (!user || Object.keys(figureLibrary).length === 0) return;
 
     try {
       const res = await fetch(`http://localhost:8080/collections/${user.id}`);
@@ -59,11 +72,17 @@ export function CollectedProvider({ children }: { children: React.ReactNode }) {
 
       const figures: CollectedFigure[] = (data.figures || [])
         .map((fig: any) => {
-          const libraryFig = figureLibrary[fig.collectibleId];
-          if (!libraryFig) return null; // skip if not in library
+          const figureId = collectibleToFigureMap[fig.collectibleId] || fig.collectibleId;
+
+          const libraryFig = figureLibrary[figureId];
+          if (!libraryFig) {
+            console.warn("Missing figure in library for collectibleId:", fig.collectibleId);
+            return null;
+          }
+
           return {
             backendId: fig.id,
-            figureId: fig.collectibleId,
+            figureId,
             collectedAt: fig.collectedAt || new Date().toISOString(),
             order: fig.sortIndex || 0,
             userImageUrl: fig.revealPicUrl || libraryFig.imageUrl || "https://via.placeholder.com/100",
@@ -73,6 +92,7 @@ export function CollectedProvider({ children }: { children: React.ReactNode }) {
         })
         .filter(Boolean) as CollectedFigure[];
 
+      // Group by series
       const grouped: Record<string, CollectedFigure[]> = {};
       figures.forEach((fig) => {
         if (!grouped[fig.series]) grouped[fig.series] = [];
@@ -82,7 +102,7 @@ export function CollectedProvider({ children }: { children: React.ReactNode }) {
       setCollectionBySeries(grouped);
       setTotalCount(figures.length);
     } catch (err) {
-      console.error(err);
+      console.error("Error refreshing collection:", err);
     }
   };
 
@@ -118,12 +138,10 @@ export function CollectedProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Fetch figure library on mount
   useEffect(() => {
     fetchFigureLibrary();
   }, []);
 
-  // Refresh collection whenever user or figureLibrary changes
   useEffect(() => {
     if (user && Object.keys(figureLibrary).length > 0) {
       refreshCollection();
