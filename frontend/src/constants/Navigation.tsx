@@ -2,6 +2,7 @@ import HomePage from "../pages/Home";
 import Rank from "../pages/Rank";
 import Profile from "../pages/Profile";
 import LibraryLayout from "../layouts/LibraryLayout"; 
+import Feed from "../pages/Feed";
 
 /**
  * TODO: Modify this constant to point to the URL of your backend.
@@ -31,6 +32,11 @@ export const PATHS: {
         link: "/profile",
         label: "Profile",
         element: <Profile />,
+    },
+    {
+        link: "/feed",
+        label: "Feed",
+        element: <Feed />,
     },
     {
         link: "/library",

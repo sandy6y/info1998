@@ -145,41 +145,123 @@ form[action$="destroy"] button {
 
 /* ===== FEED PAGE ===== */
 
+/* General page layout */
+.feed-page {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.feed-page h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Upload Form */
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 30px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background-color: #fafafa;
+}
+
+.upload-form input[type="file"] {
+  padding: 5px;
+}
+
+.upload-form input[type="text"] {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.upload-form button {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background-color: #4caf50;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.upload-form button:disabled {
+  background-color: #a5d6a7;
+  cursor: not-allowed;
+}
+
+.upload-form button:hover:not(:disabled) {
+  background-color: #45a049;
+}
+
+/* Posts Feed */
 .posts-feed {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
 }
 
+/* Individual Post Card */
 .post-card {
   border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 14px;
-  background: white;
-  max-width: 500px;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
+/* Post Header */
 .post-header {
   display: flex;
   align-items: center;
-  gap: 10px;
+  padding: 10px 15px;
+  border-bottom: 1px solid #eee;
 }
 
 .profile-pic {
-  width: 42px;
-  height: 42px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
+  margin-right: 10px;
   object-fit: cover;
+  border: 1px solid #ccc;
 }
 
+.post-header div strong {
+  display: block;
+  font-size: 16px;
+}
+
+.post-meta {
+  font-size: 12px;
+  color: #555;
+}
+
+.timestamp {
+  font-size: 10px;
+  color: #999;
+}
+
+/* Post Image */
 .post-image {
   width: 100%;
-  border-radius: 8px;
-  margin-top: 10px;
+  max-height: 400px;
+  object-fit: cover;
+  display: block;
 }
 
+/* Post Caption */
 .caption {
-  margin-top: 8px;
+  padding: 10px 15px;
+  font-size: 14px;
+  color: #333;
 }
 
 /* === RANK PAGE === */

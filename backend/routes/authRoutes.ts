@@ -58,7 +58,7 @@ router.post("/google", async (req: Request, res: Response) => {
                 id: uid,
                 email: email || "",
                 displayName: name || email?.split("@")[0] || "User",
-                profilePicUrl: picture,
+                photoURL: picture,
                 createdAt: new Date().toISOString()
             };
             await createOrUpdateUser(user);
