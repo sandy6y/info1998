@@ -1,6 +1,7 @@
 import { useAuth } from "../context/AuthContext";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../firebase/firebaseClient";
+import { BACKEND_BASE_PATH } from "../constants/Navigation";
 
 const HomePage = () => {
   const { user, setUser, setToken } = useAuth();
@@ -12,7 +13,7 @@ const HomePage = () => {
       const idToken = await result.user.getIdToken();
 
       // Send token to backend
-      const res = await fetch("http://localhost:8080/auth/google", {
+      const res = await fetch(`${BACKEND_BASE_PATH}/auth/google`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idToken }),

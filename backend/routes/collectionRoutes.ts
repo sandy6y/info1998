@@ -18,6 +18,39 @@ import {
 const router: Router = Router();
 
 /**
+ * GET /figures/all
+ * Get all available figures in the library
+ * Returns the complete figure library for browsing
+ * IMPORTANT: This route must come BEFORE /:userId to avoid matching "figures" as a userId
+ */
+router.get("/figures/all", async (req: Request, res: Response) => {
+    try {
+        // Return all figures from the figure library
+        res.json(figures);
+    } catch (error) {
+        console.error("Get all figures error:", error);
+        res.status(500).json({ error: "Failed to fetch figures" });
+    }
+});
+
+/**
+ * GET /figures/series/:seriesName
+ * Get all figures from a specific series
+ */
+router.get("/figures/series/:seriesName", async (req: Request, res: Response) => {
+    try {
+        const { seriesName } = req.params;
+
+        const seriesFigures = getFiguresBySeries(seriesName);
+
+        res.json(seriesFigures);
+    } catch (error) {
+        console.error("Get figures by series error:", error);
+        res.status(500).json({ error: "Failed to fetch figures by series" });
+    }
+});
+
+/**
  * GET /collections/:userId
  * Get user's complete collection
  */
@@ -122,38 +155,6 @@ router.put("/:userId/reorder", async (req: Request, res: Response) => {
             return res.status(404).json({ error: error.message });
         }
         res.status(500).json({ error: "Failed to reorder collection" });
-    }
-});
-
-/**
- * GET /figures
- * Get all available figures in the library
- * Returns the complete figure library for browsing
- */
-router.get("/figures/all", async (req: Request, res: Response) => {
-    try {
-        // Return all figures from the figure library
-        res.json(figures);
-    } catch (error) {
-        console.error("Get all figures error:", error);
-        res.status(500).json({ error: "Failed to fetch figures" });
-    }
-});
-
-/**
- * GET /figures/series/:seriesName
- * Get all figures from a specific series
- */
-router.get("/figures/series/:seriesName", async (req: Request, res: Response) => {
-    try {
-        const { seriesName } = req.params;
-
-        const seriesFigures = getFiguresBySeries(seriesName);
-
-        res.json(seriesFigures);
-    } catch (error) {
-        console.error("Get figures by series error:", error);
-        res.status(500).json({ error: "Failed to fetch figures by series" });
     }
 });
 

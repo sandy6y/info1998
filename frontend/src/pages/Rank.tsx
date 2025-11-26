@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
+import { BACKEND_BASE_PATH } from "../constants/Navigation";
 
 type UserRanking = {
   rank: number;
   user: {
     id: string;
     displayName: string;
-    profilePicUrl?: string;
+    photoURL?: string;
   };
   collectionCount: number;
 };
@@ -18,7 +19,7 @@ const Rank = () => {
     const fetchRankings = async () => {
       setLoading(true);
       try {
-        const res = await fetch("http://localhost:8080/users/rankings");
+        const res = await fetch(`${BACKEND_BASE_PATH}/users/rankings`);
         if (!res.ok) throw new Error("Failed to fetch rankings");
 
         const data: UserRanking[] = await res.json();
@@ -53,7 +54,7 @@ const Rank = () => {
           <div key={entry.user.id} className="rank-card">
             <div className="rank-user">
               <img
-                src={entry.user.profilePicUrl || "https://via.placeholder.com/50x50?text=👤"}
+                src={entry.user.photoURL || "https://via.placeholder.com/50x50?text=👤"}
                 alt={entry.user.displayName}
               />
               <div>

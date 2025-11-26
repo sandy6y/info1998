@@ -2,6 +2,7 @@ import { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getFirebaseStorage } from "../firebase/firebaseClient";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { BACKEND_BASE_PATH } from "../constants/Navigation";
 
 type Post = {
   id: string;
@@ -27,7 +28,7 @@ const FeedPage = () => {
   const fetchPosts = async () => {
     if (!user) return;
     try {
-      const res = await fetch(`http://localhost:8080/posts/user/${user.id}`, {
+      const res = await fetch(`${BACKEND_BASE_PATH}/posts/user/${user.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Failed to fetch posts");
@@ -56,13 +57,19 @@ const FeedPage = () => {
 
     try {
       setUploading(true);
+      console.log("Starting upload...");
+
       const storage = getFirebaseStorage();
       const fileRef = ref(storage, `posts/${user.id}/${Date.now()}-${selectedFile.name}`);
+      console.log("Uploading to Firebase Storage...");
+
       await uploadBytes(fileRef, selectedFile);
       const downloadURL = await getDownloadURL(fileRef);
+      console.log("File uploaded, URL:", downloadURL);
 
       // Send post info to backend
-      const res = await fetch("http://localhost:8080/posts", {
+      console.log("Sending post to backend...");
+      const res = await fetch(`${BACKEND_BASE_PATH}/posts`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -70,19 +77,29 @@ const FeedPage = () => {
         },
         body: JSON.stringify({
           userId: user.id,
-          figureId: "custom-figure", // optional, adapt if you track figureId
+          figureId: "sp-001",
           imageUrl: downloadURL,
           caption,
         }),
       });
 
-      if (!res.ok) throw new Error("Failed to create post");
+      console.log("Response status:", res.status);
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("Backend error:", errorData);
+        throw new Error(errorData.error || "Failed to create post");
+      }
+
+      const result = await res.json();
+      console.log("Post created:", result);
+
       setSelectedFile(null);
       setCaption("");
       fetchPosts(); // refresh posts
-    } catch (err) {
-      console.error(err);
-      alert("Failed to upload post");
+      alert("Post created successfully!");
+    } catch (err: any) {
+      console.error("Upload error:", err);
+      alert(`Failed to upload post: ${err.message}`);
     } finally {
       setUploading(false);
     }
@@ -97,14 +114,14 @@ const FeedPage = () => {
 
       {/* Upload Form */}
       <form onSubmit={handleUpload} className="upload-form">
-        <input type="file" accept="image/*" onChange={handleFileChange} />
+        <input type="file" accept="image/*" onChange={handleFileChange} required />
         <input
           type="text"
           placeholder="Add a caption..."
           value={caption}
           onChange={(e) => setCaption(e.target.value)}
         />
-        <button type="submit" disabled={uploading}>
+        <button type="submit" disabled={uploading || !selectedFile}>
           {uploading ? "Uploading..." : "Post"}
         </button>
       </form>

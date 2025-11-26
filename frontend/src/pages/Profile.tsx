@@ -12,7 +12,7 @@ const Profile = () => {
     if (!user) return;
     setLoading(true);
     refreshCollection().finally(() => setLoading(false));
-  }, [user, refreshCollection]);
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleReveal = (figureId: string) => {
     setRevealedFigures((prev) =>

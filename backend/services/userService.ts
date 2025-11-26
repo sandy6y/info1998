@@ -53,11 +53,11 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
 }
 
 /**
- * Update user profile (displayName, profilePicUrl)
+ * Update user profile (displayName, photoURL)
  */
 export async function updateUserProfile(
     userId: string,
-    updates: Partial<Pick<User, "displayName" | "profilePicUrl">>
+    updates: Partial<Pick<User, "displayName" | "photoURL">>
 ): Promise<User | null> {
     const userRef = usersCollection.doc(userId);
     const doc = await userRef.get();

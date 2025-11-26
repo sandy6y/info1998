@@ -48,11 +48,11 @@ router.get("/:userId", async (req: Request, res: Response) => {
 router.put("/:userId", async (req: Request, res: Response) => {
     try {
         const { userId } = req.params;
-        const { displayName, profilePicUrl } = req.body;
+        const { displayName, photoURL } = req.body;
 
         const updatedUser = await updateUserProfile(userId, {
             displayName,
-            profilePicUrl
+            photoURL
         });
 
         if (!updatedUser) {

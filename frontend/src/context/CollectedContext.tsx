@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useAuth } from "./AuthContext";
+import { BACKEND_BASE_PATH } from "../constants/Navigation";
 
 // Frontend CollectedFigure type
 export type CollectedFigure = {
@@ -30,32 +31,25 @@ export function CollectedProvider({ children }: { children: React.ReactNode }) {
   const [totalCount, setTotalCount] = useState(0);
 
   const [figureLibrary, setFigureLibrary] = useState<Record<string, any>>({});
-  const [collectibleToFigureMap, setCollectibleToFigureMap] = useState<Record<string, string>>({});
 
   // Fetch figure library from backend
   const fetchFigureLibrary = async () => {
     try {
-      const res = await fetch("http://localhost:8080/collections/figures/all");
+      console.log("Fetching figure library...");
+      const res = await fetch(`${BACKEND_BASE_PATH}/collections/figures/all`);
+      console.log("Figure library response:", res.status);
       if (!res.ok) throw new Error("Failed to fetch figure library");
       const figures = await res.json();
+      console.log("Fetched figures:", figures.length);
 
       const library: Record<string, any> = {};
-      const map: Record<string, string> = {};
 
       figures.forEach((fig: any) => {
         library[fig.id] = fig;
-
-        // If backend collectibleId matches fig.id, use it
-        // Otherwise, derive a mapping (adjust if needed)
-        if (fig.collectibleId) {
-          map[fig.collectibleId] = fig.id;
-        } else {
-          map[fig.id] = fig.id; // fallback
-        }
       });
 
       setFigureLibrary(library);
-      setCollectibleToFigureMap(map);
+      console.log("Figure library loaded:", Object.keys(library).length, "figures");
     } catch (err) {
       console.error("Error fetching figure library:", err);
     }
@@ -63,29 +57,37 @@ export function CollectedProvider({ children }: { children: React.ReactNode }) {
 
   // Refresh user collection
   const refreshCollection = async () => {
-    if (!user || Object.keys(figureLibrary).length === 0) return;
+    console.log("refreshCollection called, user:", user?.id, "figureLibrary size:", Object.keys(figureLibrary).length);
+    if (!user || Object.keys(figureLibrary).length === 0) {
+      console.log("Skipping refresh - user or figureLibrary not ready");
+      return;
+    }
 
     try {
-      const res = await fetch(`http://localhost:8080/collections/${user.id}`);
+      console.log("Fetching collection for user:", user.id);
+      const res = await fetch(`${BACKEND_BASE_PATH}/collections/${user.id}`);
+      console.log("Collection response:", res.status);
       if (!res.ok) throw new Error("Failed to fetch collection");
       const data = await res.json(); // { figures: [...] }
+      console.log("Collection data:", data);
 
       const figures: CollectedFigure[] = (data.figures || [])
         .map((fig: any) => {
-          const figureId = collectibleToFigureMap[fig.collectibleId] || fig.collectibleId;
+          // Backend stores figureId directly, not collectibleId
+          const figureId = fig.figureId;
 
           const libraryFig = figureLibrary[figureId];
           if (!libraryFig) {
-            console.warn("Missing figure in library for collectibleId:", fig.collectibleId);
+            console.warn("Missing figure in library for figureId:", figureId);
             return null;
           }
 
           return {
-            backendId: fig.id,
+            backendId: figureId, // Use figureId as backend ID
             figureId,
             collectedAt: fig.collectedAt || new Date().toISOString(),
-            order: fig.sortIndex || 0,
-            userImageUrl: fig.revealPicUrl || libraryFig.imageUrl || "https://via.placeholder.com/100",
+            order: fig.order || 0,
+            userImageUrl: fig.userImageUrl || libraryFig.imageUrl || "https://via.placeholder.com/100",
             isRevealed: fig.isRevealed || false,
             series: libraryFig.series || "Unknown",
           };
@@ -110,7 +112,7 @@ export function CollectedProvider({ children }: { children: React.ReactNode }) {
     if (!user) return;
 
     try {
-      const res = await fetch(`http://localhost:8080/collections/${user.id}/figures`, {
+      const res = await fetch(`${BACKEND_BASE_PATH}/collections/${user.id}/figures`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ figureId: collectibleId }),
@@ -127,7 +129,7 @@ export function CollectedProvider({ children }: { children: React.ReactNode }) {
     if (!user) return;
 
     try {
-      const res = await fetch(`http://localhost:8080/collections/${user.id}/figures/${backendId}`, {
+      const res = await fetch(`${BACKEND_BASE_PATH}/collections/${user.id}/figures/${backendId}`, {
         method: "DELETE",
       });
 

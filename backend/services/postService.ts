@@ -1,19 +1,70 @@
 import { db } from "../firebaseConfig";
+import { figureLibrary } from "../figureData";
 
 const postsCollection = db.collection("posts");
 const likesCollection = db.collection("likes");
 const commentsCollection = db.collection("comments");
+const usersCollection = db.collection("users");
 
 /**
  * Get all posts from a user
  */
 export async function getUserPosts(userId: string) {
-    const snapshot = await postsCollection
-        .where("userId", "==", userId)
-        .orderBy("createdAt", "desc")
-        .get();
+    try {
+        const snapshot = await postsCollection
+            .where("userId", "==", userId)
+            .get();
 
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        // If no posts, return empty array
+        if (snapshot.empty) {
+            return [];
+        }
+
+        // Enrich posts with user data and figure data
+        const posts = await Promise.all(
+            snapshot.docs.map(async (doc) => {
+                try {
+                    const postData = doc.data();
+
+                    // Get user data
+                    let userData;
+                    try {
+                        const userDoc = await usersCollection.doc(postData.userId).get();
+                        userData = userDoc.data();
+                    } catch (err) {
+                        console.error("Error fetching user data:", err);
+                    }
+
+                    // Get figure data
+                    const figure = figureLibrary[postData.figureId];
+
+                    return {
+                        id: doc.id,
+                        ...postData,
+                        userDisplayName: userData?.displayName || "Unknown User",
+                        userProfilePic: userData?.photoURL || undefined,
+                        figureSeries: figure?.series || "Unknown",
+                        figureOrder: parseInt((postData.figureId || "").split('-').pop() || "0")
+                    };
+                } catch (err) {
+                    console.error("Error enriching post:", err);
+                    // Return basic post data if enrichment fails
+                    return {
+                        id: doc.id,
+                        ...doc.data(),
+                        userDisplayName: "Unknown User",
+                        figureSeries: "Unknown",
+                        figureOrder: 0
+                    };
+                }
+            })
+        );
+
+        return posts;
+    } catch (error) {
+        console.error("Error in getUserPosts:", error);
+        throw error;
+    }
 }
 
 /**

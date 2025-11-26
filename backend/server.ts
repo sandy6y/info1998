@@ -4,7 +4,6 @@ dotenv.config();
 
 import path from "path";
 import express, { Express, Request, Response } from "express";
-import cors from "cors";
 import { WeatherResponse } from "@full-stack/types";
 import fetch from "node-fetch";
 
@@ -21,7 +20,16 @@ const app: Express = express();
 const hostname = "0.0.0.0";
 const port = 8080;
 
-app.use(cors());
+// CORS middleware - allow all origins for development
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
 app.use(express.json());
 app.use("/api", routes);
 

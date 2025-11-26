@@ -26,7 +26,7 @@ export async function getUserCollectionBySeries(userId: string) {
     // Group figures by series (series is part of figureId, e.g., "sp-001" -> "sp")
     const bySeries: Record<string, any[]> = {};
 
-    if (collection.figures) {
+    if (collection && collection.figures) {
         for (const figure of collection.figures) {
             const series = figure.figureId.split('-')[0];
             if (!bySeries[series]) {
@@ -54,11 +54,18 @@ export async function addFigureToCollection(
     const doc = await collectionRef.get();
 
     const now = new Date().toISOString();
-    const newFigure = {
-        ...figureData,
+    // Remove undefined values for Firestore
+    const newFigure: any = {
+        figureId: figureData.figureId,
+        isRevealed: figureData.isRevealed,
         collectedAt: now,
         order: 0 // Will be set properly when get existing figures
     };
+
+    // Only add userImageUrl if it's defined
+    if (figureData.userImageUrl !== undefined) {
+        newFigure.userImageUrl = figureData.userImageUrl;
+    }
 
     if (!doc.exists) {
         // Create new collection
