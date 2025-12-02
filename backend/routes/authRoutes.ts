@@ -62,6 +62,12 @@ router.post("/google", async (req: Request, res: Response) => {
                 createdAt: new Date().toISOString()
             };
             await createOrUpdateUser(user);
+        } else {
+            // Update existing user's photo URL if it changed
+            if (picture && user.photoURL !== picture) {
+                user.photoURL = picture;
+                await createOrUpdateUser(user);
+            }
         }
 
         // Return user data

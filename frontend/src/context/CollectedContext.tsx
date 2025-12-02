@@ -57,33 +57,27 @@ export function CollectedProvider({ children }: { children: React.ReactNode }) {
 
   // Refresh user collection
   const refreshCollection = async () => {
-    console.log("refreshCollection called, user:", user?.id, "figureLibrary size:", Object.keys(figureLibrary).length);
     if (!user || Object.keys(figureLibrary).length === 0) {
-      console.log("Skipping refresh - user or figureLibrary not ready");
       return;
     }
 
     try {
-      console.log("Fetching collection for user:", user.id);
       const res = await fetch(`${BACKEND_BASE_PATH}/collections/${user.id}`);
-      console.log("Collection response:", res.status);
       if (!res.ok) throw new Error("Failed to fetch collection");
-      const data = await res.json(); // { figures: [...] }
-      console.log("Collection data:", data);
+      const data = await res.json();
 
       const figures: CollectedFigure[] = (data.figures || [])
         .map((fig: any) => {
-          // Backend stores figureId directly, not collectibleId
           const figureId = fig.figureId;
-
           const libraryFig = figureLibrary[figureId];
+
           if (!libraryFig) {
             console.warn("Missing figure in library for figureId:", figureId);
             return null;
           }
 
           return {
-            backendId: figureId, // Use figureId as backend ID
+            backendId: figureId,
             figureId,
             collectedAt: fig.collectedAt || new Date().toISOString(),
             order: fig.order || 0,
@@ -118,10 +112,16 @@ export function CollectedProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ figureId: collectibleId }),
       });
 
-      if (!res.ok) throw new Error("Failed to add figure");
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to add figure");
+      }
       await refreshCollection();
-    } catch (err) {
+      alert("Figure added successfully!");
+    } catch (err: any) {
       console.error("Error adding figure:", err);
+      alert(err.message || "Failed to add figure");
+      throw err;
     }
   };
 
@@ -133,10 +133,16 @@ export function CollectedProvider({ children }: { children: React.ReactNode }) {
         method: "DELETE",
       });
 
-      if (!res.ok) throw new Error("Failed to remove figure");
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to remove figure");
+      }
       await refreshCollection();
-    } catch (err) {
+      alert("Figure removed successfully!");
+    } catch (err: any) {
       console.error("Error removing figure:", err);
+      alert(err.message || "Failed to remove figure");
+      throw err;
     }
   };
 

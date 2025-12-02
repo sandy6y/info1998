@@ -41,6 +41,28 @@ const FeedPage = () => {
     }
   };
 
+  const handleDeletePost = async (postId: string) => {
+    if (!confirm("Are you sure you want to delete this post?")) return;
+
+    try {
+      const res = await fetch(`${BACKEND_BASE_PATH}/posts/${postId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to delete post");
+      }
+
+      alert("Post deleted successfully!");
+      fetchPosts();
+    } catch (err: any) {
+      console.error("Delete post error:", err);
+      alert(`Failed to delete post: ${err.message}`);
+    }
+  };
+
   useEffect(() => {
     fetchPosts();
   }, [user]);
@@ -149,6 +171,21 @@ const FeedPage = () => {
 
               <img src={post.imageUrl} alt="figure" className="post-image" />
               {post.caption && <p className="caption">{post.caption}</p>}
+
+              <button
+                onClick={() => handleDeletePost(post.id)}
+                style={{
+                  marginTop: '10px',
+                  padding: '8px 16px',
+                  backgroundColor: '#dc3545',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+              >
+                Delete Post
+              </button>
             </div>
           ))}
       </div>

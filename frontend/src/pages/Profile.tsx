@@ -22,7 +22,11 @@ const Profile = () => {
 
   const handleAddFigure = async () => {
     const figureId = prompt(
-      "Enter figure ID to add (format: sp-001, echo-1, or hirono-reshape-1):"
+      "Enter figure ID to add:\n\n" +
+      "Skull Panda: sp-001 to sp-039\n" +
+      "Hirono Reshape: hr-001 to hr-010\n" +
+      "Hirono Echo: hr-011 to hr-023\n" +
+      "Hirono Shelter: hr-024 to hr-036"
     );
     if (!figureId) return;
     await addFigure(figureId.trim());
@@ -32,6 +36,7 @@ const Profile = () => {
     await removeFigure(figureId);
     setRevealedFigures((prev) => prev.filter((id) => id !== figureId));
   };
+
 
   if (!user) return <p style={{ textAlign: "center" }}>Please log in to view your profile.</p>;
   if (loading) return <p>Loading collection...</p>;
