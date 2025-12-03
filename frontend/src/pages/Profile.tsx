@@ -24,9 +24,8 @@ const Profile = () => {
     const figureId = prompt(
       "Enter figure ID to add:\n\n" +
       "Skull Panda: sp-001 to sp-039\n" +
-      "Hirono Reshape: hr-001 to hr-010\n" +
-      "Hirono Echo: hr-011 to hr-023\n" +
-      "Hirono Shelter: hr-024 to hr-036"
+      "Hirono: hr-001 to hr-036\n" +
+      "Labubu: lb-001 to lb-007"
     );
     if (!figureId) return;
     await addFigure(figureId.trim());
@@ -43,7 +42,7 @@ const Profile = () => {
 
   return (
     <div style={{ textAlign: "center" }}>
-      <h1>{user.displayName ? `Welcome ${user.displayName}!` : "Welcome!"}</h1>
+      <h1>{user.displayName ? ` ${user.displayName}'s Library` : "Self Library"}</h1>
       <p>Total figures collected: {totalCount}</p>
 
       <button onClick={handleAddFigure}>Add Figure</button>

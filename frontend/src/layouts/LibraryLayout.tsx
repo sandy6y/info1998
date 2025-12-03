@@ -6,6 +6,7 @@ export default function LibraryLayout() {
     <main style={{ textAlign: "center" }}>
       <h1>Blind Box Library</h1>
       <p>Click on each series to see what figures exists</p>
+      <p>The subseries are ordered by release date with the newest at the top</p>
     
       <SeriesHeader />
 

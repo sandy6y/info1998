@@ -1,6 +1,7 @@
-type Blindbox = {
-    characterName: string;
-    serieName: string;
-    serieNbr: number;
-    name: string;
-}
+type Figure = {
+  id: string;    
+  name: string;        
+  series: string;        
+  imageUrl: string;
+  description: string;
+};

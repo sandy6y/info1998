@@ -1,12 +1,12 @@
-import BlindboxCard from "../components/Blindbox";
+import Blindbox from "../components/Blindbox";
 
 const Labubu = () => (
-    <body>
-        <center>
-            <h3>Exciting Macaron Series</h3>
-                <BlindboxCard characterName="Labubu" serieName="Exciting Macaron"/>
-        </center>
-    </body>
+  <div>
+    <center>
+      <h3>Exciting Macaron Series</h3>
+        <Blindbox series="Labubu" subSeries="Exciting Macaron" />
+    </center>
+  </div>
 );
 
 export default Labubu;

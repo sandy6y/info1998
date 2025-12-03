@@ -21,6 +21,7 @@ export const COLLECTIBLES: Collectible[] = [
     { id: "skullpanda-warmth-10", seriesId: "skullpanda-warmth", characterName: "Skullpanda", serieName: "Warmth", serieNbr: 10, name: "Loosening" },
     { id: "skullpanda-warmth-11", seriesId: "skullpanda-warmth", characterName: "Skullpanda", serieName: "Warmth", serieNbr: 11, name: "Enjoy Oneself" },
     { id: "skullpanda-warmth-12", seriesId: "skullpanda-warmth", characterName: "Skullpanda", serieName: "Warmth", serieNbr: 12, name: "Chirping" },
+    { id: "skullpanda-warmth-13", seriesId: "skullpanda-warmth", characterName: "Skullpanda", serieName: "Warmth", serieNbr: 13, name: "The Warmth" },
 
     // Skullpanda - The Sound Series
     { id: "skullpanda-the-sound-1", seriesId: "skullpanda-the-sound", characterName: "Skullpanda", serieName: "The Sound", serieNbr: 1, name: "The Vigilance" },

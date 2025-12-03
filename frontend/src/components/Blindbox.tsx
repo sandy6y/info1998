@@ -1,25 +1,37 @@
 // ====== Blind Box Page =====
 
 import "./styles.css"
+import { useEffect, useState } from "react";
 import BlindboxCard from "./BlindboxCard";
-import { BLINDBOX } from "../constants/conts";
+import { getFiguresBySeries, Figure } from "../services/figures";
 
 type BlindboxProps = {
-    characterName: string;
-    serieName: string; 
+    series: string;     //character name
+    subSeries: string;  // e.g. "Warmth", "The Paradox"
 }
 
-const Blindbox = ({ characterName, serieName }: BlindboxProps) => {
-    const filteredBoxes = BLINDBOX.filter(
-        (b) => b.characterName === characterName && b.serieName === serieName
-    );
+const Blindbox = ({ series, subSeries }: BlindboxProps) => {
+    const [figures, setFigures ] = useState<Figure[]>([]);
     
+    useEffect(() => {
+        getFiguresBySeries(series)
+            .then(allFigures => {
+                // filter client-side by subSeries
+                const filtered = allFigures.filter(f =>
+                    f.name.includes(subSeries) || f.imageUrl.includes(`/${subSeries}/`)
+            );
+            setFigures(filtered);
+        })
+        .catch(console.error);
+    }, [series, subSeries]);
+
     return (
         <div className="card-container">
-            {filteredBoxes.map((blindbox) => (
+            {figures.map((figure)=> (
                 <BlindboxCard 
-                key={`${blindbox.characterName}-${blindbox.serieName}-${blindbox.serieNbr}`} 
-                blindbox={blindbox} />
+                key={figure.id} 
+                figure={figure}
+                />
             ))}
         </div>
     );

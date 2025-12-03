@@ -1,6 +1,6 @@
 // ====== Header for blind box series =====
 
-import { HeaderSimple } from "../components/Header"; // reuse your existing header component
+import { HeaderSimple } from "../components/Header"; 
 import {SPATHS} from "../constants/SeriesNavigation"
 
 export default function SeriesHeader() {

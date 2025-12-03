@@ -1,27 +1,22 @@
 // ====== Blind Box Card Format =====
+import { Figure } from "../services/figures";
 
 type BlindboxCardProps = {
-    blindbox: Blindbox;
+    figure: Figure;
 };
 
-
-const BlindboxCard = ({blindbox}: BlindboxCardProps) => {
-    
-
-    const imagePath = `/images/${blindbox.characterName}/${blindbox.serieName}/${blindbox.serieNbr}.jpg`;
-
+const BlindboxCard = ({ figure }: BlindboxCardProps) => {
     return (
     <div className="boxCard">
       <img 
-        src={imagePath}
+        src={figure.imageUrl}
         className="figure"
-        alt={blindbox.name}
+        alt={figure.name}
       />
 
-      <p className="figureName">
-        {blindbox.name}
-      </p>
-    
+      <p className="figureId">{figure.id}</p>
+
+      <p className="figureName">{figure.name}</p>
     </div>
     );
 };
