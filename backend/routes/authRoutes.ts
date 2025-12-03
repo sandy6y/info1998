@@ -1,35 +1,9 @@
 import { Router, Request, Response } from "express";
-import {
-    AuthSignupRequest,
-    AuthLoginRequest,
-    GoogleAuthRequest,
-    AuthResponse,
-    User
-} from "@full-stack/types";
+import { User } from "@full-stack/types";
 import { auth } from "../firebaseConfig";
 import { createOrUpdateUser, getUserById } from "../services/userService";
 
 const router: Router = Router();
-
-/**
- * POST /auth/signup
- * This app uses Google OAuth only - signup happens through /auth/google
- */
-router.post("/signup", async (req: Request, res: Response) => {
-    res.status(400).json({
-        error: "Email/password signup not supported. Please use Google OAuth via /auth/google"
-    });
-});
-
-/**
- * POST /auth/login
- * This app uses Google OAuth only - login happens through /auth/google
- */
-router.post("/login", async (req: Request, res: Response) => {
-    res.status(400).json({
-        error: "Email/password login not supported. Please use Google OAuth via /auth/google"
-    });
-});
 
 /**
  * POST /auth/google

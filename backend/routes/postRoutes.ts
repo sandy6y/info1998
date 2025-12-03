@@ -24,6 +24,59 @@ const router: Router = Router();
 // ===== POST ROUTES =====
 
 /**
+ * GET /posts
+ * Get all posts from all users (for the main feed)
+ */
+router.get("/", async (req: Request, res: Response) => {
+    try {
+        const { db } = await import("../firebaseConfig");
+        const postsCollection = db.collection("posts");
+        const usersCollection = db.collection("users");
+        const { figureLibrary } = await import("../figureData");
+
+        const snapshot = await postsCollection.orderBy("createdAt", "desc").limit(50).get();
+
+        if (snapshot.empty) {
+            return res.json([]);
+        }
+
+        const posts = await Promise.all(
+            snapshot.docs.map(async (doc) => {
+                const postData = doc.data();
+
+                // Get user data
+                let userData;
+                try {
+                    const userDoc = await usersCollection.doc(postData.userId).get();
+                    userData = userDoc.data();
+                } catch (err) {
+                    console.error("Error fetching user data:", err);
+                }
+
+                // Get figure data
+                const figure = figureLibrary[postData.figureId];
+
+                return {
+                    id: doc.id,
+                    ...postData,
+                    userDisplayName: userData?.displayName || "Unknown User",
+                    userProfilePic: userData?.photoURL || undefined,
+                    figureSeries: figure?.series || "Unknown",
+                    figureOrder: parseInt((postData.figureId || "").split('-').pop() || "0"),
+                    likesCount: postData.likesCount || 0,
+                    commentsCount: postData.commentsCount || 0
+                };
+            })
+        );
+
+        res.json(posts);
+    } catch (error) {
+        console.error("Get all posts error:", error);
+        res.status(500).json({ error: "Failed to fetch posts" });
+    }
+});
+
+/**
  * GET /posts/user/:userId
  * Get all posts from a specific user
  * Used to display user's figure posts on their profile
@@ -145,6 +198,28 @@ router.post("/:postId/like", async (req: Request, res: Response) => {
             return res.status(404).json({ error: error.message });
         }
         res.status(500).json({ error: "Failed to toggle like" });
+    }
+});
+
+/**
+ * GET /posts/user/:userId/likes
+ * Get all post IDs that a user has liked
+ */
+router.get("/user/:userId/likes", async (req: Request, res: Response) => {
+    try {
+        const { userId } = req.params;
+        const { db } = await import("../firebaseConfig");
+        const likesCollection = db.collection("likes");
+
+        const snapshot = await likesCollection
+            .where("userId", "==", userId)
+            .get();
+
+        const likedPostIds = snapshot.docs.map(doc => doc.data().postId);
+        res.json(likedPostIds);
+    } catch (error) {
+        console.error("Get user likes error:", error);
+        res.status(500).json({ error: "Failed to fetch user likes" });
     }
 });
 

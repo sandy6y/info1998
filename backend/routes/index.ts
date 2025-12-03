@@ -1,5 +1,4 @@
 import { Router } from "express";
-import auth from "./auth";
 import users from "./users";
 import series from "./series";
 import collections from "./collections";
@@ -8,7 +7,6 @@ import comments from "./comments";
 
 const r: Router = Router();
 
-r.use("/auth", auth);
 r.use("/users", users);
 r.use("/series", series);
 r.use("/collections", collections);

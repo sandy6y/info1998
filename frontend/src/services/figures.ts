@@ -9,9 +9,11 @@ export type Figure = {
 const BASE_URL = "http://localhost:8080/collections";
 
 export async function getFiguresBySeries(seriesName: string): Promise<Figure[]> {
-  const res = await fetch(`${BASE_URL}/figures/series/${seriesName}`);
-  if (!res.ok) throw new Error("Failed to fetch figures");
-  return res.json();
+  // Fetch all figures and filter by series on client side
+  const allFigures = await getAllFigures();
+  return allFigures.filter(figure =>
+    figure.series.toLowerCase().includes(seriesName.toLowerCase())
+  );
 }
 
 export async function getAllFigures(): Promise<Figure[]> {

@@ -1,18 +1,9 @@
 import { Router, Request, Response } from "express";
-import {
-    UserCollection,
-    CollectionBySeries,
-    AddFigureRequest,
-    ReorderCollectionRequest,
-    CollectedFigure
-} from "@full-stack/types";
-import { figures, figureLibrary, getFiguresBySeries } from "../figureData";
+import { figures } from "../figureData";
 import {
     getUserCollection,
-    getUserCollectionBySeries,
     addFigureToCollection,
-    removeFigureFromCollection,
-    reorderCollection
+    removeFigureFromCollection
 } from "../services/collectionService";
 
 const router: Router = Router();
@@ -34,23 +25,6 @@ router.get("/figures/all", async (req: Request, res: Response) => {
 });
 
 /**
- * GET /figures/series/:seriesName
- * Get all figures from a specific series
- */
-router.get("/figures/series/:seriesName", async (req: Request, res: Response) => {
-    try {
-        const { seriesName } = req.params;
-
-        const seriesFigures = getFiguresBySeries(seriesName);
-
-        res.json(seriesFigures);
-    } catch (error) {
-        console.error("Get figures by series error:", error);
-        res.status(500).json({ error: "Failed to fetch figures by series" });
-    }
-});
-
-/**
  * GET /collections/:userId
  * Get user's complete collection
  */
@@ -63,23 +37,6 @@ router.get("/:userId", async (req: Request, res: Response) => {
     } catch (error) {
         console.error("Get collection error:", error);
         res.status(500).json({ error: "Failed to fetch collection" });
-    }
-});
-
-/**
- * GET /collections/:userId/by-series
- * Get user's collection organized by series
- * Shows count per series for the UI
- */
-router.get("/:userId/by-series", async (req: Request, res: Response) => {
-    try {
-        const { userId } = req.params;
-
-        const collectionBySeries = await getUserCollectionBySeries(userId);
-        res.json(collectionBySeries);
-    } catch (error) {
-        console.error("Get collection by series error:", error);
-        res.status(500).json({ error: "Failed to fetch collection by series" });
     }
 });
 
@@ -131,30 +88,6 @@ router.delete("/:userId/figures/:figureId", async (req: Request, res: Response) 
             return res.status(404).json({ error: error.message });
         }
         res.status(500).json({ error: "Failed to remove figure from collection" });
-    }
-});
-
-/**
- * PUT /collections/:userId/reorder
- * Reorder figures in user's collection
- */
-router.put("/:userId/reorder", async (req: Request, res: Response) => {
-    try {
-        const { userId } = req.params;
-        const { figureOrders } = req.body;
-
-        const reorderedFigures = await reorderCollection(userId, figureOrders);
-
-        res.json({
-            message: "Collection reordered successfully",
-            figures: reorderedFigures
-        });
-    } catch (error: any) {
-        console.error("Reorder collection error:", error);
-        if (error.message === "Collection not found" || error.message?.includes("not found in collection")) {
-            return res.status(404).json({ error: error.message });
-        }
-        res.status(500).json({ error: "Failed to reorder collection" });
     }
 });
 

@@ -209,10 +209,44 @@ export async function getPostLikes(postId: string) {
 export async function getPostComments(postId: string) {
     const snapshot = await commentsCollection
         .where("postId", "==", postId)
-        .orderBy("createdAt", "asc")
         .get();
 
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    // Enrich comments with user data
+    const comments = await Promise.all(
+        snapshot.docs.map(async (doc) => {
+            const commentData = doc.data();
+
+            // Get user data
+            let userDisplayName = "Unknown User";
+            let userProfilePic;
+            try {
+                const userDoc = await usersCollection.doc(commentData.userId).get();
+                const userData = userDoc.data();
+                if (userData) {
+                    userDisplayName = userData.displayName || "Unknown User";
+                    userProfilePic = userData.photoURL;
+                }
+            } catch (err) {
+                console.error("Error fetching user data for comment:", err);
+            }
+
+            return {
+                id: doc.id,
+                ...commentData,
+                userDisplayName,
+                userProfilePic
+            };
+        })
+    );
+
+    // Sort comments by createdAt in memory (to avoid needing a composite index)
+    comments.sort((a: any, b: any) => {
+        const timeA = new Date(a.createdAt).getTime();
+        const timeB = new Date(b.createdAt).getTime();
+        return timeA - timeB; // ascending order (oldest first)
+    });
+
+    return comments;
 }
 
 /**
